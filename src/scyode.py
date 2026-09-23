@@ -1,33 +1,51 @@
 import sys
+from scanner import Scanner
+from error_handler import ErrorHandler
 
-def scanner(input):
-    print("Scanner Not Implemented")
 
-if __name__ == "__main__":
+class Scyode:
+    def run(self, source):
+        ErrorHandler.had_error = False
+        for token in Scanner(source).scan_tokens():
+            print(token)
+
+    # File reading mode
+    def run_file(self, path):
+        try: 
+            if path[-3:] != ".vv": raise TypeError
+            with open(path) as f:
+                file = f.read()
+                self.run(f.read)
+            return 65 if ErrorHandler.had_error else 0
+        except FileNotFoundError:
+            print('File does not exist')
+        except NotImplementedError as ni:
+            print(f"{f.name}\n```\n{file}\n```\n", ni)
+        except TypeError:
+            print("Can only run .vv files")
 
     # REPL mode
-    if len(sys.argv) == 1:
+    def run_prompt(self):
         print(">>>>> Interactive Shell <<<<<")
-        try:
-            while True:
+        while True:
+            try:
                 line_call = input(">>> ")
                 if line_call == "quit":
                     raise KeyboardInterrupt
-                scanner(line_call)
-        except KeyboardInterrupt:
-            print("..... Exiting Shell .....")
+                self.run(line_call)
+            except (EOFError, KeyboardInterrupt):
+                print("..... Exiting Shell .....")
+                return 0
+            except Exception as e:
+                print(e)
 
-    # File reading mode
-    elif len(sys.argv) == 2:
-        if sys.argv[1][-3:] != ".vv":
-            print("Can only run .vv files")
-        else:
-            try:
-                with open(sys.argv[1]) as f:
-                    file = f.read()
-                    print(f"{f.name}\n```\n{file}\n```")
-                    scanner(file)
-            except FileNotFoundError:
-                print('File does not exist')
-    else:
-        print("Usage: ph.py [script]")
+def main():
+    if len(sys.argv) > 2:
+        print("Usage: python scyode.py [script]")
+        return 64
+    scyode = Scyode()
+    return scyode.run_file(sys.argv[1]) if len(sys.argv) == 2 else scyode.run_prompt()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
