@@ -1,0 +1,4 @@
+"This -> \" is an escaped quote" 
+"This -> \\ is an escaped backslash" 
+"This -> \n is an escaped newline" 
+"This -> \t is an escaped tab" 

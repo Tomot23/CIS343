@@ -1,0 +1,4 @@
+456 3.14 @ NUMBER, NUMBER
+"hello" "" @ STRING, STRING
+test_var f1 @ IDENTIFIER, IDENTIFIER
+" @ unterminated string

@@ -1,0 +1,10 @@
+@ this will not be output
+@ even if there are literals
+@ "hello" 213 !!!
+
+@==
+and they
+can be long
+==@
+
+@== oops!
