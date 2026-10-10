@@ -5,7 +5,7 @@ TokenType = Enum(
     [
         # Single character
         'LEFT_PAREN', 'RIGHT_PAREN', 'LEFT_BRACE', 'RIGHT_BRACE',
-        'COMMA', 'DOT', 'MINUS', 'PLUS', 'SEMICOLON', 'STAR',
+        'COMMA', 'DOT', 'MINUS', 'PLUS', 'SEMICOLON', 'STAR', 'PERCENT',
 
         # Possible multi-characters
         'BANG', 'BANG_EQUAL',
