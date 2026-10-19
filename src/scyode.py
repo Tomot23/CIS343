@@ -1,13 +1,20 @@
 import sys
 from scanner import Scanner
+from parser import Parser
 from error_handler import ErrorHandler
+from ast_printer import AstPrinter
 
 
 class Scyode:
     def run(self, source):
         ErrorHandler.had_error = False
-        for token in Scanner(source).scan_tokens():
-            print(token)
+        tokens = Scanner(source).scan_tokens()
+        parser = Parser(tokens)
+        expression = parser.parse()
+
+        if ErrorHandler.had_error: return
+
+        print(AstPrinter().print(expression))
 
     # File reading mode
     def run_file(self, path):

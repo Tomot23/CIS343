@@ -51,12 +51,14 @@ operator   → "==" | "!=" | "<" | "<=" | ">" | ">="
     ```
     expression = Expr.Binary(
         Expr.Unary(
-            Token(TokenType.MINUS, "-", None, 1),
-            Expr.Literal(123)
+            Token(TokenType.BANG, "!", None, 1),
+            Expr.Literal("true")
         ),
-        Token(TokenType.STAR, '*', None, 1),
-        Expr.Grouping(
-            Expr.Literal(45.67)
+        Token(TokenType.EQUAL_EQUAL, "==", None, 1),
+        Expr.Binary(
+            Expr.Literal("false"),
+            Token(TokenType.BANG_EQUAL, "!=", None, 1),
+            Expr.Literal("false")
         )
     )
     ```
