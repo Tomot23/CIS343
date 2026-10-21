@@ -3,18 +3,21 @@ from scanner import Scanner
 from parser import Parser
 from error_handler import ErrorHandler
 from ast_printer import AstPrinter
+from interpreter import Interpreter
 
 
 class Scyode:
     def run(self, source):
+        interpreter = Interpreter()
         ErrorHandler.had_error = False
+        ErrorHandler.had_runtime_error = False
         tokens = Scanner(source).scan_tokens()
         parser = Parser(tokens)
         expression = parser.parse()
 
         if ErrorHandler.had_error: return
 
-        print(AstPrinter().print(expression))
+        interpreter.interpret(expression)
 
     # File reading mode
     def run_file(self, path):
@@ -23,7 +26,9 @@ class Scyode:
             with open(path) as f:
                 file = f.read()
                 self.run(file)
-            return 65 if ErrorHandler.had_error else 0
+            if ErrorHandler.had_error: return 65
+            if ErrorHandler.runtime_error: return 70
+            return 0
         except FileNotFoundError:
             ErrorHandler.error(0, 'File does not exist')
         except NotImplementedError as ni:

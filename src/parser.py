@@ -113,7 +113,7 @@ class Parser:
         return self.tokens[self.current - 1]
 
     def error(self, token: Token, message: str):
-        ErrorHandler.error(token, message)
+        ErrorHandler.errort(token, message)
         return Parser.ParseError()
 
     def sychronize(self):
