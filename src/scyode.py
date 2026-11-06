@@ -13,16 +13,16 @@ class Scyode:
         ErrorHandler.had_runtime_error = False
         tokens = Scanner(source).scan_tokens()
         parser = Parser(tokens)
-        expression = parser.parse()
+        statements = parser.parse()
 
         if ErrorHandler.had_error: return
 
-        interpreter.interpret(expression)
+        interpreter.interpret(statements)
 
     # File reading mode
     def run_file(self, path):
         try:
-            if path[-3:] != ".vv": raise TypeError
+            if path[-3:] != ".vv": raise OSError
             with open(path) as f:
                 file = f.read()
                 self.run(file)
@@ -33,7 +33,7 @@ class Scyode:
             ErrorHandler.error(0, 'File does not exist')
         except NotImplementedError as ni:
             ErrorHandler.error(0,f"{f.name}\n```\n{file}\n```\n", ni)
-        except TypeError:
+        except OSError:
             ErrorHandler.error(0, "Can only run .vv files")
 
     # REPL mode

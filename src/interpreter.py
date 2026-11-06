@@ -1,14 +1,15 @@
 from Expr import Expr
+from Stmt import Stmt
 from scyode_token import TokenType, Token
 from runtime_error import RuntimeError
 from error_handler import ErrorHandler
 
-class Interpreter(Expr.Visitor):
+class Interpreter(Expr.Visitor, Stmt.Visitor):
 
-    def interpret(self, expression: Expr):
+    def interpret(self, statements: list[Stmt]):
         try:
-            value = self.evaluate(expression)
-            print(self.stringify(value))
+            for statement in statements:
+                self.execute(statement)
         except RuntimeError as e:
             ErrorHandler.runtime_error(e)
 
@@ -111,3 +112,15 @@ class Interpreter(Expr.Visitor):
 
     def evaluate(self, expr: Expr):
         return expr.accept(self)
+
+    def execute(self, stmt: Stmt):
+        stmt.accept(self)
+
+    def visit_expression_stmt(self, stmt: Stmt.Expression):
+        self.evaluate(stmt.expression)
+        return None
+
+    def visit_print_stmt(self, stmt: Stmt.Print):
+        value = self.evaluate(stmt.expression)
+        print(self.stringify(value))
+        return None

@@ -4,7 +4,7 @@ class GenerateAst():
 
     def main():
         if len(sys.argv) != 2:
-            print("Usage: python generate_ast <output directory>")
+            print("Usage: python generate_ast.py <output directory>")
             sys.exit(64)
         output_dir = sys.argv[1]
 
@@ -14,11 +14,19 @@ class GenerateAst():
             "Literal    = value: object",
             "Unary      = operator: Token, right: Expr"
         ])
+
+        GenerateAst.define_ast(output_dir, "Stmt", [
+            "Expression = expression: Expr",
+            "Print      = expression: Expr"
+        ])
         
     def define_ast(output_dir: str, base_name:str, types: list[str]):
         path = output_dir + base_name + ".py"
         with open(path, "w") as f:
-            f.write("from scyode_token import Token\n")
+            if base_name == "Expr":
+                f.write("from scyode_token import Token\n")
+            elif base_name == "Stmt":
+                f.write("from Expr import Expr\n")
             f.write("from abc import ABC, abstractmethod\n\n\n")
 
             f.write("class " + base_name + ":\n")

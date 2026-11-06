@@ -1,5 +1,6 @@
 from scyode_token import Token, TokenType
 from Expr import Expr
+from Stmt import Stmt
 from error_handler import ErrorHandler
 
 class Parser:
@@ -10,13 +11,38 @@ class Parser:
         self.current = 0
 
     def parse(self):
-        try:
-            return self.expression()
-        except Parser.ParseError:
-            return None
+        statements = []
+        while not self.is_at_end():
+            statements.append(self.declaration())
+        return statements
 
     def expression(self):
         return self.equality()
+
+    def declaration(self):
+        try:
+            if self.match(TokenType.VAR): return self.var_declaration()
+            return self.statement()
+        except self.ParseError:
+            self.sychronize()
+            return None
+
+    def statement(self):
+        if self.match(TokenType.PRINT): return self.print_statement()
+        return self.expression_statement()
+
+    def print_statement(self):
+        value = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after value")
+        return Stmt.Print(value)
+
+    def var_declaration(self):
+        pass
+
+    def expression_statement(self):
+        expr = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after expression")
+        return Stmt.Expression(expr)
 
     def equality(self):
         expr = self.comparison()
