@@ -1,5 +1,6 @@
 import sys
 
+
 class GenerateAst():
 
     def main():
@@ -9,15 +10,19 @@ class GenerateAst():
         output_dir = sys.argv[1]
 
         GenerateAst.define_ast(output_dir, "Expr", [
+            "Assign     = name: Token, value: Expr",
             "Binary     = left: Expr, operator: Token, right: Expr",
             "Grouping   = expression: Expr",
             "Literal    = value: object",
-            "Unary      = operator: Token, right: Expr"
+            "Unary      = operator: Token, right: Expr",
+            "Variable   = name: Token"
         ])
 
         GenerateAst.define_ast(output_dir, "Stmt", [
+            "Block      = statements: list[Stmt]",
             "Expression = expression: Expr",
-            "Print      = expression: Expr"
+            "Print      = expression: Expr",
+            "Var        = name: Token, initializer: Expr"
         ])
         
     def define_ast(output_dir: str, base_name:str, types: list[str]):
@@ -26,7 +31,7 @@ class GenerateAst():
             if base_name == "Expr":
                 f.write("from scyode_token import Token\n")
             elif base_name == "Stmt":
-                f.write("from Expr import Expr\n")
+                f.write("from Expr import Expr, Token\n")
             f.write("from abc import ABC, abstractmethod\n\n\n")
 
             f.write("class " + base_name + ":\n")
@@ -43,18 +48,19 @@ class GenerateAst():
                 f.write("\n")
 
     def define_type(writer, base_name: str, class_name:str, field_list:str):
-        writer.write("\tclass " + class_name + ":\n")
+        writer.write(f"\tclass {class_name}:\n")
 
-        writer.write("\t\tdef __init__(self, " + field_list + "):\n")
+        writer.write(f"\t\tdef __init__(self, {field_list}):\n")
 
         fields = field_list.split(", ")
         for field in fields:
             name = field.split(": ")[0]
-            writer.write("\t\t\tself." + name + " = " + name + "\n")
+            writer.write(f"\t\t\tself.{name} = {name}\n")
 
-        writer.write("\n\t\tdef accept(self, visitor: " + base_name + ".Visitor):\n")
-        writer.write("\t\t\treturn visitor.visit_" + class_name.lower()
-                      + "_" + base_name.lower() + "(self)\n")
+        writer.write(f"\n\t\tdef accept(self, visitor: "\
+                     f"{base_name}.Visitor):\n")
+        writer.write(f"\t\t\treturn visitor.visit_{class_name.lower()}_" \
+                     f"{base_name.lower()}(self)\n")
 
     def define_visitor(writer, base_name:str, types:list[str]):
         writer.write("\tclass Visitor(ABC):\n")
@@ -62,9 +68,9 @@ class GenerateAst():
         for type in types:
             type_name = type.split("=")[0].strip()
             writer.write("\t\t@abstractmethod\n")
-            writer.write("\t\tdef visit_" + type_name.lower() + "_" + 
-                         base_name.lower() + "(" + base_name.lower() + 
-                         ": " + base_name + "." + type_name + "): pass\n")
+            writer.write(f"\t\tdef visit_{type_name.lower()}_" \
+                         f"{base_name.lower()}({base_name.lower()}: " \
+                         f"{base_name}.{type_name}): pass\n")
 
 if __name__ == "__main__":
     GenerateAst.main()

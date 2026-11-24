@@ -16,7 +16,7 @@ primary        → NUMBER | STRING | "true" | "false" | "nil"
 This expression grammar is equivalent to the one implentmented in Lox, except for my additional '//' and '%' tokens on the same precedence as division and multiplication (like how it is in Python). The precedence is also the same as Lox being, from low to high, equality &rarr; comparison &rarr; term &rarr; factor &rarr; unary. All operators are left-associative, besides unary which is right-associative, again the same as Lox.
 
 ### Setup/ Run Instructions
- There are no required dependancies to run Scyode (other than Python). Once you have downloaded the source code and are in your parent directory, you can access the interactive shell using ```python scr/scyode.py``` or run a .vv file using ```python scr/scyode [file_path]```. The files to run the tests documented below are in the lab3 folder under the test folder and can be run using ```python scr/scyode test/lab3/[test_file]```. For the 'syntax' test, run the interactive shell and input the listed commands one line at a time.
+ There are no required dependancies to run Scyode (other than Python). Once you have downloaded the source code and are in your parent directory, you can access the interactive shell using ```python src/scyode.py``` or run a .vv file using ```python src/scyode [file_path]```. The files to run the tests documented below are in the lab3 folder under the test folder and can be run using ```python src/scyode test/lab3/[test_file]```. For the 'syntax' test, run the interactive shell and input the listed commands one line at a time.
 
 ### Test Cases
 

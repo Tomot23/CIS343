@@ -2,7 +2,27 @@ from error_handler import ErrorHandler
 from scyode_token import Token
 from token_type import TokenType
 
+
 class Scanner:
+
+    keywords = {
+        "and": TokenType.AND,
+        "class": TokenType.CLASS,
+        "else": TokenType.ELSE,
+        "false": TokenType.FALSE,
+        "for": TokenType.FOR,
+        "fun": TokenType.FUN,
+        "if": TokenType.IF,
+        "nil": TokenType.NIL,
+        "or": TokenType.OR,
+        "print": TokenType.PRINT,
+        "return": TokenType.RETURN,
+        "super": TokenType.SUPER,
+        "this": TokenType.THIS,
+        "true": TokenType.TRUE,
+        "var": TokenType.VAR,
+        "while": TokenType.WHILE
+    }
 
     def __init__(self, source: str):
         self.source = source
@@ -10,24 +30,6 @@ class Scanner:
         self.current = 0
         self.line = 1
         self.tokens = []
-        self.keywords = {
-            "and": TokenType.AND,
-            "class": TokenType.CLASS,
-            "else": TokenType.ELSE,
-            "false": TokenType.FALSE,
-            "for": TokenType.FOR,
-            "fun": TokenType.FUN,
-            "if": TokenType.IF,
-            "nil": TokenType.NIL,
-            "or": TokenType.OR,
-            "print": TokenType.PRINT,
-            "return": TokenType.RETURN,
-            "super": TokenType.SUPER,
-            "this": TokenType.THIS,
-            "true": TokenType.TRUE,
-            "var": TokenType.VAR,
-            "while": TokenType.WHILE
-        }
 
     def at_source_end(self):
         return self.current >= len(self.source)
@@ -67,7 +69,8 @@ class Scanner:
                     case '\\n': s += "\n"
                     case '\\\\': s += "\\"
                     case '\\"': s += "\""
-                    case _:ErrorHandler.error(self.line, "Unrecognized escape sequnce")
+                    case _:ErrorHandler.error(self.line, 
+                                              "Unrecognized escape sequnce")
                 self.skip(2)
             else:
                 s += self.advance()
@@ -86,7 +89,8 @@ class Scanner:
             self.advance()
             while self.is_digit(self.peek()): self.advance()
 
-        self.add_token(TokenType.NUMBER, float(self.source[self.start:self.current]))
+        self.add_token(TokenType.NUMBER, 
+                       float(self.source[self.start:self.current]))
 
     def identifier(self):
         while self.is_alphanumberic(self.peek()): self.advance()
@@ -139,15 +143,20 @@ class Scanner:
 
             # Possible multi-characters
             case '!':
-                self.add_token(TokenType.BANG_EQUAL if self.match('=') else TokenType.BANG)
+                self.add_token(TokenType.BANG_EQUAL if self.match('=') 
+                               else TokenType.BANG)
             case '=':
-                self.add_token(TokenType.EQUAL_EQUAL if self.match('=') else TokenType.EQUAL)
+                self.add_token(TokenType.EQUAL_EQUAL if self.match('=') 
+                               else TokenType.EQUAL)
             case '<':
-                self.add_token(TokenType.LESS_EQUAL if self.match('=') else TokenType.LESS)
+                self.add_token(TokenType.LESS_EQUAL if self.match('=') 
+                               else TokenType.LESS)
             case '>':
-                self.add_token(TokenType.GREATER_EQUAL if self.match('=') else TokenType.GREATER)
+                self.add_token(TokenType.GREATER_EQUAL if self.match('=') 
+                               else TokenType.GREATER)
             case '/':
-                self.add_token(TokenType.DOUBLE_SLASH if self.match('/') else TokenType.SLASH)
+                self.add_token(TokenType.DOUBLE_SLASH if self.match('/') 
+                               else TokenType.SLASH)
             case '@':
                 if self.match('=') and self.match('='): 
                     while (not self.at_source_end() and self.peek(3) != '==@'):

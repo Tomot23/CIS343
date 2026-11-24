@@ -1,6 +1,7 @@
 from Expr import Expr
 from scyode_token import Token, TokenType
 
+
 class AstPrinter(Expr.Visitor):
 
     def print(self, expr: Expr):
@@ -16,7 +17,7 @@ class AstPrinter(Expr.Visitor):
     @staticmethod
     def visit_literal_expr(expr: Expr.Literal):
         if expr.value is None: return "nil"
-        if type(expr.value) is str: return '"' + expr.value + '"'
+        if type(expr.value) is str: return f'"{expr.value}"'
         return str(expr.value)
 
     def visit_unary_expr(self, expr: Expr.Unary):

@@ -27,7 +27,7 @@ class Scyode:
                 file = f.read()
                 self.run(file)
             if ErrorHandler.had_error: return 65
-            if ErrorHandler.runtime_error: return 70
+            if ErrorHandler.had_runtime_error: return 70
             return 0
         except FileNotFoundError:
             ErrorHandler.error(0, 'File does not exist')
@@ -56,7 +56,8 @@ def main():
         ErrorHandler.error(0, "Usage: python scyode.py [script]")
         return 64
     scyode = Scyode()
-    return scyode.run_file(sys.argv[1]) if len(sys.argv) == 2 else scyode.run_prompt()
+    return (scyode.run_file(sys.argv[1]) if len(sys.argv) == 2 
+            else scyode.run_prompt())
 
 
 if __name__ == "__main__":

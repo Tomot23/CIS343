@@ -1,5 +1,6 @@
 from scyode_token import Token
 
+
 class RuntimeError(RuntimeError):
 
     def __init__(self, token: Token, message: str):

@@ -3,6 +3,7 @@ from Expr import Expr
 from Stmt import Stmt
 from error_handler import ErrorHandler
 
+
 class Parser:
     class ParseError(RuntimeError): pass
 
@@ -17,18 +18,19 @@ class Parser:
         return statements
 
     def expression(self):
-        return self.equality()
+        return self.assignment()
 
     def declaration(self):
         try:
             if self.match(TokenType.VAR): return self.var_declaration()
             return self.statement()
         except self.ParseError:
-            self.sychronize()
+            self.synchronize()
             return None
 
     def statement(self):
         if self.match(TokenType.PRINT): return self.print_statement()
+        if self.match(TokenType.LEFT_BRACE): return Stmt.Block(self.block())
         return self.expression_statement()
 
     def print_statement(self):
@@ -37,12 +39,44 @@ class Parser:
         return Stmt.Print(value)
 
     def var_declaration(self):
-        pass
+        name = self.consume(TokenType.IDENTIFIER, "Expect variable name")
+
+        initializer = None
+        if self.match(TokenType.EQUAL):
+            initializer = self.expression()
+
+        self.consume(TokenType.SEMICOLON, 
+                     "Expect ';' after variable declaration")
+        return Stmt.Var(name, initializer)
 
     def expression_statement(self):
         expr = self.expression()
         self.consume(TokenType.SEMICOLON, "Expect ';' after expression")
         return Stmt.Expression(expr)
+
+    def block(self):
+        statements = []
+
+        while not self.check(TokenType.RIGHT_BRACE) and not self.is_at_end():
+            statements.append(self.declaration())
+
+        self.consume(TokenType.RIGHT_BRACE, "Expect '}' after block")
+        return statements
+
+    def assignment(self):
+        expr = self.equality()
+
+        if self.match(TokenType.EQUAL):
+            equals = self.previous()
+            value = self.assignment()
+
+            if type(expr) is Expr.Variable:
+                name = expr.name
+                return Expr.Assign(name, value)
+
+            self.error(equals, "Invalid assignment target")
+
+        return expr
 
     def equality(self):
         expr = self.comparison()
@@ -102,6 +136,9 @@ class Parser:
         if self.match(TokenType.NUMBER, TokenType.STRING):
             return Expr.Literal(self.previous().literal)
 
+        if self.match(TokenType.IDENTIFIER):
+            return Expr.Variable(self.previous())
+
         if self.match(TokenType.LEFT_PAREN):
             expr = self.expression()
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression")
@@ -142,20 +179,20 @@ class Parser:
         ErrorHandler.errort(token, message)
         return Parser.ParseError()
 
-    def sychronize(self):
+    def synchronize(self):
         self.advance()
 
         while not self.is_at_end():
             if self.previous().type == TokenType.SEMICOLON: return
 
             match self.peek().type:
-                case TokenType.CLASS: pass
-                case TokenType.FUN: pass
-                case TokenType.VAR: pass
-                case TokenType.FOR: pass
-                case TokenType.IF: pass
-                case TokenType.WHILE: pass
-                case TokenType.PRINT: pass
+                case TokenType.CLASS: return
+                case TokenType.FUN: return
+                case TokenType.VAR: return
+                case TokenType.FOR: return
+                case TokenType.IF: return
+                case TokenType.WHILE: return
+                case TokenType.PRINT: return
                 case TokenType.RETURN: return
 
             self.advance()

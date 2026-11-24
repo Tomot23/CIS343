@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 class Expr:
 	class Visitor(ABC):
 		@abstractmethod
+		def visit_assign_expr(expr: Expr.Assign): pass
+		@abstractmethod
 		def visit_binary_expr(expr: Expr.Binary): pass
 		@abstractmethod
 		def visit_grouping_expr(expr: Expr.Grouping): pass
@@ -12,9 +14,19 @@ class Expr:
 		def visit_literal_expr(expr: Expr.Literal): pass
 		@abstractmethod
 		def visit_unary_expr(expr: Expr.Unary): pass
+		@abstractmethod
+		def visit_variable_expr(expr: Expr.Variable): pass
 
 	@abstractmethod
 	def accept(vistor: Visitor): pass
+
+	class Assign:
+		def __init__(self, name: Token, value: Expr):
+			self.name = name
+			self.value = value
+
+		def accept(self, visitor: Expr.Visitor):
+			return visitor.visit_assign_expr(self)
 
 	class Binary:
 		def __init__(self, left: Expr, operator: Token, right: Expr):
@@ -46,4 +58,11 @@ class Expr:
 
 		def accept(self, visitor: Expr.Visitor):
 			return visitor.visit_unary_expr(self)
+
+	class Variable:
+		def __init__(self, name: Token):
+			self.name = name
+
+		def accept(self, visitor: Expr.Visitor):
+			return visitor.visit_variable_expr(self)
 

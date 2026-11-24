@@ -1,7 +1,7 @@
 # Lab 4
 
 ### Setup/ Run Instructions
- There are no required dependancies to run Scyode (other than Python). Once you have downloaded the source code and are in your parent directory, you can access the interactive shell using ```python scr/scyode.py``` or run a .vv file using ```python scr/scyode [file_path]```. The files to run the tests documented below are in the lab3 folder under the test folder and can be run using ```python scr/scyode test/lab4/[test_file]```.
+ There are no required dependancies to run Scyode (other than Python). Once you have downloaded the source code and are in your parent directory, you can access the interactive shell using ```python src/scyode.py``` or run a .vv file using ```python src/scyode [file_path]```. The files to run the tests documented below are in the lab4 folder under the test folder and can be run using ```python src/scyode test/lab4/[test_file]```.
 
  ### Test Cases
 

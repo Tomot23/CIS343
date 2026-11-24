@@ -1,10 +1,14 @@
 from Expr import Expr
 from Stmt import Stmt
 from scyode_token import TokenType, Token
+from environment import Environment
 from runtime_error import RuntimeError
 from error_handler import ErrorHandler
 
+
 class Interpreter(Expr.Visitor, Stmt.Visitor):
+
+    environment = Environment()
 
     def interpret(self, statements: list[Stmt]):
         try:
@@ -42,7 +46,8 @@ class Interpreter(Expr.Visitor, Stmt.Visitor):
                     return float(left) + float(right)
                 if type(left) is str and type(right) is str:
                     return str(left) + str(right)
-                raise RuntimeError(expr.operator, "Operands must be two numbers or two strings")
+                raise RuntimeError(expr.operator, "Operands must be two" \
+                                   " numbers or two strings")
             case TokenType.SLASH:
                 self.check_number_operands(expr.operator, left, right)
                 return float(left) / float(right)
@@ -75,6 +80,9 @@ class Interpreter(Expr.Visitor, Stmt.Visitor):
                 return -float(right)
 
         return None
+
+    def visit_variable_expr(self, expr: Expr.Variable):
+        return self.environment.get(expr.name)
 
     @staticmethod
     def check_number_operand(operator: Token, operand: object):
@@ -116,6 +124,20 @@ class Interpreter(Expr.Visitor, Stmt.Visitor):
     def execute(self, stmt: Stmt):
         stmt.accept(self)
 
+    def execute_block(self, statments: list[Stmt], environment: Environment):
+        previous = self.environment
+        try:
+            self.environment = environment
+
+            for statement in statments:
+                self.execute(statement)
+        finally:
+            self.environment = previous
+
+    def visit_block_stmt(self, stmt: Stmt.Block):
+        self.execute_block(stmt.statements, Environment(self.environment))
+        return None
+
     def visit_expression_stmt(self, stmt: Stmt.Expression):
         self.evaluate(stmt.expression)
         return None
@@ -124,3 +146,16 @@ class Interpreter(Expr.Visitor, Stmt.Visitor):
         value = self.evaluate(stmt.expression)
         print(self.stringify(value))
         return None
+
+    def visit_var_stmt(self, stmt: Stmt.Var):
+        value = None
+        if stmt.initializer is not None:
+            value = self.evaluate(stmt.initializer)
+
+        self.environment.define(stmt.name.lexeme, value)
+        return None
+
+    def visit_assign_expr(self, expr: Expr.Assign):
+        value = self.evaluate(expr.value)
+        self.environment.assign(expr.name, value)
+        return value
